@@ -31,10 +31,11 @@ class DatabaseSingleton:
                 CREATE TABLE IF NOT EXISTS libros (
                     isbn TEXT PRIMARY KEY, 
                     titulo TEXT, 
-                    autor TEXT, 
+                    id_autor INT, 
                     genero TEXT, 
                     anio INT, 
-                    cantidad INT
+                    cantidad INT,
+                    FOREIGN KEY(id_autor) REFERENCES autores(id_autor)
                 )
             """)
             self.cursor.execute("""
@@ -42,7 +43,7 @@ class DatabaseSingleton:
                     id_usuario INT PRIMARY KEY, 
                     nombre TEXT, 
                     apellido TEXT, 
-                    tipo_usuario TEXT, 
+                    tipo_usuario INT, 
                     direccion TEXT, 
                     telefono INT
                 )
@@ -59,11 +60,11 @@ class DatabaseSingleton:
                 CREATE TABLE IF NOT EXISTS prestamos (
                     id_prestamo INT PRIMARY KEY, 
                     id_usuario INT, 
-                    id_libro INT, 
+                    isbn TEXT, 
                     fecha_prestamo TEXT, 
                     fecha_devolucion TEXT,
                     FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario),
-                    FOREIGN KEY(id_libro) REFERENCES libros(isbn)
+                    FOREIGN KEY(isbn) REFERENCES libros(isbn)
                 )
             """)
             # Confirmar los cambios

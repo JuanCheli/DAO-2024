@@ -4,12 +4,12 @@ class PrestamoRepository:
     def __init__(self):
         self.db = DatabaseSingleton()
 
-    def agregar_prestamo(self, id_prestamo, id_usuario, id_libro, fecha_prestamo, fecha_devolucion):
+    def agregar_prestamo(self, id_prestamo, id_usuario, isbn, fecha_prestamo, fecha_devolucion):
         query = """
-        INSERT INTO prestamos (id_prestamo, id_usuario, id_libro, fecha_prestamo, fecha_devolucion)
+        INSERT INTO prestamos (id_prestamo, id_usuario, isbn, fecha_prestamo, fecha_devolucion)
         VALUES (?, ?, ?, ?, ?)
         """
-        parameters = (id_prestamo, id_usuario, id_libro, fecha_prestamo, fecha_devolucion)
+        parameters = (id_prestamo, id_usuario, isbn, fecha_prestamo, fecha_devolucion)
         self.db.execute_query(query, parameters)
 
     def obtener_prestamo_por_id(self, id_prestamo):
