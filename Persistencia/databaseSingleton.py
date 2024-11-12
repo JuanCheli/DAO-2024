@@ -43,7 +43,7 @@ class DatabaseSingleton:
                     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, 
                     nombre TEXT NOT NULL, 
                     apellido TEXT NOT NULL, 
-                    tipo_usuario INT NOT NULL, 
+                    tipo_usuario BOOLEAN NOT NULL, 
                     direccion TEXT NOT NULL, 
                     telefono INT NOT NULL
                 )

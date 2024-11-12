@@ -1,15 +1,27 @@
 from Persistencia.databaseSingleton import DatabaseSingleton
+from Persistencia.autorRepository import AutorRepository
 
 class LibroRepository:
     def __init__(self):
         self.db = DatabaseSingleton()
+        self.autor_repo = AutorRepository()
 
-    def agregar_libro(self, isbn, titulo, id_autor, genero, anio, cantidad):
+    def agregar_libro(self, isbn, titulo, nombre_autor, genero, anio, cantidad):
         # Verificar si el libro ya existe
         if self.existe_libro(isbn):
             print(f"El libro con ISBN {isbn} ya existe en la base de datos.")
             return False
 
+        # Verificar si el autor ya existe
+        nombre, apellido = nombre_autor.split(" ")
+        id_autor = self.autor_repo.existe_autor(nombre, apellido)
+
+        if not id_autor:
+            # Crear nuevo autor y obtener su id_autor
+            self.autor_repo.agregar_autor(nombre, apellido, "Desconocida")  # Nacionalidad por defecto
+            id_autor = self.autor_repo.existe_autor(nombre, apellido)  # Obtener el id_autor recién creado
+
+        # Agregar el libro con el id_autor obtenido o creado
         query = """
         INSERT INTO libros (isbn, titulo, id_autor, genero, anio, cantidad)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -17,6 +29,7 @@ class LibroRepository:
         parameters = (isbn, titulo, id_autor, genero, anio, cantidad)
         self.db.execute_query(query, parameters)
         return True
+
 
     def existe_libro(self, isbn):
         """Verifica si un libro con el ISBN especificado ya existe en la base de datos."""

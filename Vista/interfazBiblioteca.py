@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime
 
 this_file_path = os.path.dirname(__file__)
 sys.path.append(os.path.join(this_file_path, "../"))
@@ -82,10 +83,11 @@ class InterfazBiblioteca:
         self._crear_pantalla_formulario("Registrar Libro", ["ISBN", "Título", "Autor", "Género", "Año", "Cantidad"], self.guardar_libro)
 
     def pantalla_registrar_usuario(self):
+        # Cambiar para usar un OptionMenu para el campo "Tipo de usuario"
         self._crear_pantalla_formulario("Registrar Usuario", ["Nombre", "Apellido", "Tipo de usuario", "Dirección", "Teléfono"], self.guardar_usuario)
 
     def pantalla_prestar_libro(self):
-        self._crear_pantalla_formulario("Prestar Libro", ["Nombre Usuario", "Apellido Usuario", "ISBN"], self.prestar_libro)
+        self._crear_pantalla_formulario("Prestar Libro", ["Nombre Usuario", "Apellido Usuario", "ISBN del libro a Prestar"], self.prestar_libro)
 
     def pantalla_devolver_libro(self):
         self._crear_pantalla_formulario("Devolver Libro", ["ID Préstamo"], self.devolver_libro)
@@ -112,7 +114,13 @@ class InterfazBiblioteca:
         entradas = {}
         for campo in campos:
             etiqueta = ctk.CTkLabel(self.root, text=f"{campo}:", font=self.button_font, text_color="white")
-            entrada = ctk.CTkEntry(self.root, font=self.button_font, width=300)
+            
+            if campo == "Tipo de usuario":
+                # Aquí usamos un CTkOptionMenu para "Tipo de usuario"
+                opciones = ["Estudiante", "Docente"]
+                entrada = ctk.CTkOptionMenu(self.root, values=opciones, font=self.button_font, width=300)
+            else:
+                entrada = ctk.CTkEntry(self.root, font=self.button_font, width=300)
 
             self.canvas.create_window(self.root.winfo_screenwidth() // 2 - 150, y_position, window=etiqueta, anchor="e")
             self.canvas.create_window(self.root.winfo_screenwidth() // 2 + 150, y_position, window=entrada, anchor="w")
@@ -121,10 +129,10 @@ class InterfazBiblioteca:
             y_position += 50
 
         # Botones de guardar y volver al menú
-        guardar_boton = ctk.CTkButton(self.root, text="Guardar", font=self.button_font, command=lambda: funcion_guardar(entradas), width=200)
+        confirmar_boton = ctk.CTkButton(self.root, text="Confirmar", font=self.button_font, command=lambda: funcion_guardar(entradas), width=200)
         volver_boton = ctk.CTkButton(self.root, text="Volver al Menú", font=self.button_font, command=self.menu_principal, width=200)
 
-        self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position + 30, window=guardar_boton)
+        self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position + 30, window=confirmar_boton)
         self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position + 90, window=volver_boton)
 
 
@@ -149,30 +157,35 @@ class InterfazBiblioteca:
         self._mostrar_resultado(resultado, "Libro registrado correctamente.", "El libro ya se encuentra registrado.")
 
     def guardar_usuario(self, entradas):
+        tipo_usuario = 0 if entradas["Tipo de usuario"].get() == "Estudiante" else 1
         resultado = self.biblioteca_gestor.registrar_usuario(
             entradas["Nombre"].get(),
             entradas["Apellido"].get(),
-            entradas["Tipo de usuario"].get(),
+            tipo_usuario,  # Enviamos el valor numérico
             entradas["Dirección"].get(),
             entradas["Teléfono"].get()
         )
         self._mostrar_resultado(resultado, "Usuario registrado correctamente.", "El usuario ya se encuentra registrado.")
 
+
     def prestar_libro(self, entradas):
-        resultado = self.biblioteca_gestor.prestar_libro(
-            entradas["Nombre Usuario"].get(),
-            entradas["Apellido Usuario"].get(),
-            entradas["ISBN"].get()
-        )
-        self._mostrar_resultado(resultado, "Préstamo realizado correctamente.", "No se pudo realizar el préstamo.")
+        nombre_usuario = entradas["Nombre Usuario"].get()
+        apellido_usuario = entradas["Apellido Usuario"].get()
+        isbn_libro = entradas["ISBN del libro a Prestar"].get()
+        resultado = self.biblioteca_gestor.prestar_libro(nombre_usuario, apellido_usuario, isbn_libro)
+        # Mostrar el resultado
+        if resultado is True:
+            self._mostrar_resultado(True, "Préstamo realizado correctamente.", None)
+        else:
+            self._mostrar_resultado(False, None, resultado)
 
     def devolver_libro(self, entradas):
         resultado = self.biblioteca_gestor.devolver_libro(entradas["ID Préstamo"].get())
-        self._mostrar_resultado(resultado, "Libro devuelto correctamente.", "No se pudo devolver el libro.")
+        self._mostrar_resultado(resultado, "Libro devuelto correctamente.", "ID del préstamo no encontrado.")
 
     def consultar_disponibilidad(self, entradas):
         cantidad = self.biblioteca_gestor.consultar_disponibilidad(entradas["ISBN"].get())
-        if cantidad is not None:
+        if cantidad is not False:
             messagebox.showinfo("Disponibilidad", f"Cantidad disponible: {cantidad}")
         else:
             messagebox.showerror("Error", "Libro no encontrado.")
