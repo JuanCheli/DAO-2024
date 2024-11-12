@@ -43,7 +43,7 @@ class BibliotecaGestor:
         
         id_usuario = usuario_existente[0][0]  # Obtener el id_usuario del resultado
 
-        tipo_usuario = usuario_existente[0][2]  # El tipo_usuario es el tercer campo
+        tipo_usuario = usuario_existente[0][3]  # El tipo_usuario es el cuarto campo
         max_libros = (3 if tipo_usuario == 0 else 5)
         prestamos_activos = self.prestamo_repo.contar_prestamos_activos(id_usuario)
 
