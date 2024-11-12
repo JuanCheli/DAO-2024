@@ -1,3 +1,5 @@
 tkinter
 customtkinter
 pillow
+matplotlib
+reportlab

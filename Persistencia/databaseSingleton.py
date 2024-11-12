@@ -63,6 +63,7 @@ class DatabaseSingleton:
                     isbn TEXT NOT NULL, 
                     fecha_prestamo TEXT NOT NULL, 
                     fecha_devolucion TEXT NOT NULL,
+                    devuelto BOOLEAN NOT NULL,
                     FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario),
                     FOREIGN KEY(isbn) REFERENCES libros(isbn)
                 )

@@ -63,7 +63,8 @@ class InterfazBiblioteca:
             ("Registrar Usuario", self.pantalla_registrar_usuario),
             ("Prestar Libro", self.pantalla_prestar_libro),
             ("Devolver Libro", self.pantalla_devolver_libro),
-            ("Consultar Disponibilidad", self.pantalla_consultar_disponibilidad)
+            ("Consultar Disponibilidad", self.pantalla_consultar_disponibilidad),
+            ("Generar Reporte", self.pantalla_generar_reporte)
         ]
         
         y_position = 375
@@ -71,6 +72,8 @@ class InterfazBiblioteca:
             boton = ctk.CTkButton(self.root, text=texto, font=self.button_font, command=comando, width=350, height=55, fg_color="#ffffff", text_color="black", border_width=2)
             self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position, window=boton)
             y_position += 70
+
+
 
     def pantalla_registrar_autor(self):
         self._crear_pantalla_formulario("Registrar Autor", ["Nombre", "Apellido", "Nacionalidad"], self.guardar_autor)
@@ -89,6 +92,12 @@ class InterfazBiblioteca:
 
     def pantalla_consultar_disponibilidad(self):
         self._crear_pantalla_formulario("Consultar Disponibilidad", ["ISBN"], self.consultar_disponibilidad)
+
+    def pantalla_generar_reporte(self):
+        """Llama a la generación de reporte en BibliotecaGestor y muestra un mensaje de confirmación."""
+        self.biblioteca_gestor.generar_reporte()
+        messagebox.showinfo("Reporte", "Reporte generado con éxito en la carpeta 'Reportes'.")
+        self.menu_principal()
 
     def _crear_pantalla_formulario(self, titulo, campos, funcion_guardar):
         # Limpiar el canvas

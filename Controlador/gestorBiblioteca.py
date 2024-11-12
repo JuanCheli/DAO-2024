@@ -6,6 +6,9 @@ from Persistencia.libroRepository import LibroRepository
 from Persistencia.autorRepository import AutorRepository
 from Persistencia.usuarioRepository import UsuarioRepository
 from Persistencia.prestamoRepository import PrestamoRepository
+
+from Reportes.reportes import crear_reporte
+
 from datetime import datetime, timedelta
 
 
@@ -87,4 +90,8 @@ class BibliotecaGestor:
         else:
             raise ValueError("Libro no encontrado.")
         
-
+    # 7. Generación de Reportes
+    def generar_reporte(self):
+        """Genera un reporte PDF de toda la información solicitada."""
+        crear_reporte() 
+        print("Reporte generado con éxito.")
