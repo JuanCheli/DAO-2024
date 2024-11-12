@@ -1,17 +1,14 @@
 class Prestamo:
-    def __init__(self, id_prestamo, id_usuario, isbn, fecha_prestamo, fecha_devolucion):
-        self.id_prestamo = id_prestamo            # Identificador único del préstamo
-        self.id_usuario = id_usuario              # ID del usuario (clave foránea)
-        self.isbn = isbn                          # ISBN del libro prestado (clave foránea)
+    def __init__(self, usuario, isbn, fecha_prestamo, fecha_devolucion):
+        self.usuario = usuario                    # Usuario que realizo el prestamo
+        self.isbn = isbn                          # ISBN del libro prestado 
         self.fecha_prestamo = fecha_prestamo      # Fecha del préstamo
         self.fecha_devolucion = fecha_devolucion  # Fecha de devolución estimada
 
     # Getters
-    def get_id_prestamo(self):
-        return self.id_prestamo
 
-    def get_id_usuario(self):
-        return self.id_usuario
+    def get_usuario(self):
+        return self.usuario
 
     def get_isbn(self):
         return self.isbn
@@ -23,11 +20,9 @@ class Prestamo:
         return self.fecha_devolucion
 
     # Setters
-    def set_id_prestamo(self, id_prestamo):
-        self.id_prestamo = id_prestamo
 
-    def set_id_usuario(self, id_usuario):
-        self.id_usuario = id_usuario
+    def set_usuario(self, usuario):
+        self.usuario = usuario
 
     def set_isbn(self, isbn):
         self.isbn = isbn

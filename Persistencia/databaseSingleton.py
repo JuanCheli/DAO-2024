@@ -13,7 +13,7 @@ class DatabaseSingleton:
     def _initialize_connection(self):
         try:
             # Establecer conexión a la base de datos
-            self.connection = sqlite3.connect("singleton_database.db")
+            self.connection = sqlite3.connect("DAO-2024/biblioteca.db")
             self.cursor = self.connection.cursor()
             print("Conexión a SQLite establecida")
             
@@ -29,40 +29,40 @@ class DatabaseSingleton:
             # Crear las tablas usando la instrucción CREATE TABLE IF NOT EXISTS
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS libros (
-                    isbn TEXT PRIMARY KEY, 
-                    titulo TEXT, 
-                    id_autor INT, 
-                    genero TEXT, 
-                    anio INT, 
-                    cantidad INT,
+                    isbn INTEGER PRIMARY KEY NOT NULL, 
+                    titulo TEXT NOT NULL, 
+                    id_autor INT NOT NULL, 
+                    genero TEXT NOT NULL, 
+                    anio INT NOT NULL, 
+                    cantidad INT NOT NULL,
                     FOREIGN KEY(id_autor) REFERENCES autores(id_autor)
                 )
             """)
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS usuarios (
-                    id_usuario INT PRIMARY KEY, 
-                    nombre TEXT, 
-                    apellido TEXT, 
-                    tipo_usuario INT, 
-                    direccion TEXT, 
-                    telefono INT
+                    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    nombre TEXT NOT NULL, 
+                    apellido TEXT NOT NULL, 
+                    tipo_usuario INT NOT NULL, 
+                    direccion TEXT NOT NULL, 
+                    telefono INT NOT NULL
                 )
             """)
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS autores (
-                    id_autor INT PRIMARY KEY, 
-                    nombre TEXT, 
-                    apellido TEXT, 
-                    nacionalidad TEXT
+                    id_autor INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    nombre TEXT NOT NULL, 
+                    apellido TEXT NOT NULL, 
+                    nacionalidad TEXT NOT NULL
                 )
             """)
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS prestamos (
-                    id_prestamo INT PRIMARY KEY, 
-                    id_usuario INT, 
-                    isbn TEXT, 
-                    fecha_prestamo TEXT, 
-                    fecha_devolucion TEXT,
+                    id_prestamo INTEGER PRIMARY KEY AUTOINCREMENT,  
+                    id_usuario INT NOT NULL, 
+                    isbn TEXT NOT NULL, 
+                    fecha_prestamo TEXT NOT NULL, 
+                    fecha_devolucion TEXT NOT NULL,
                     FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario),
                     FOREIGN KEY(isbn) REFERENCES libros(isbn)
                 )
@@ -96,3 +96,8 @@ class DatabaseSingleton:
             self.connection.close()
             self.connection = None
             print("Conexión cerrada")
+
+
+if __name__ == "__main__":
+    # Crear una instancia de la clase DatabaseSingleton
+    db = DatabaseSingleton()

@@ -1,6 +1,5 @@
 class Usuario:
-    def __init__(self, id_usuario, nombre, apellido, tipo_usuario, direccion, telefono):
-        self.id_usuario = id_usuario        # Identificador único del usuario
+    def __init__(self, nombre, apellido, tipo_usuario, direccion, telefono):
         self.nombre = nombre                # Nombre del usuario
         self.apellido = apellido            # Apellido del usuario
         self.tipo_usuario = tipo_usuario    # Tipo de usuario (estudiante o profesor)
@@ -8,8 +7,6 @@ class Usuario:
         self.telefono = telefono            # Teléfono del usuario
 
     # Getters
-    def get_id_usuario(self):
-        return self.id_usuario
 
     def get_nombre(self):
         return self.nombre
@@ -27,8 +24,6 @@ class Usuario:
         return self.telefono
 
     # Setters
-    def set_id_usuario(self, id_usuario):
-        self.id_usuario = id_usuario
 
     def set_nombre(self, nombre):
         self.nombre = nombre

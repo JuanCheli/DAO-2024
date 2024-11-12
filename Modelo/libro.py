@@ -1,8 +1,8 @@
 class Libro:
-    def __init__(self, isbn, titulo, id_autor, genero, anio, cantidad):
+    def __init__(self, isbn, titulo, autor, genero, anio, cantidad):
         self.isbn = isbn            # Código ISBN
         self.titulo = titulo        # Título del libro
-        self.id_autor = id_autor    # ID del autor (clave foránea)
+        self.autor = autor          # Autor del libro 
         self.genero = genero        # Género literario
         self.anio = anio            # Año de publicación
         self.cantidad = cantidad    # Cantidad disponible de este libro
@@ -14,8 +14,8 @@ class Libro:
     def get_titulo(self):
         return self.titulo
 
-    def get_id_autor(self):
-        return self.id_autor
+    def get_autor(self):
+        return self.autor
 
     def get_genero(self):
         return self.genero
@@ -33,8 +33,8 @@ class Libro:
     def set_titulo(self, titulo):
         self.titulo = titulo
 
-    def set_id_autor(self, id_autor):
-        self.id_autor = id_autor
+    def set_autor(self, autor):
+        self.autor = autor
 
     def set_genero(self, genero):
         self.genero = genero
