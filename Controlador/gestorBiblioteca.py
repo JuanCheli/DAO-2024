@@ -7,10 +7,7 @@ from Persistencia.autorRepository import AutorRepository
 from Persistencia.usuarioRepository import UsuarioRepository
 from Persistencia.prestamoRepository import PrestamoRepository
 from datetime import datetime, timedelta
-from Modelo.autor import Autor
-from Modelo.libro import Libro
-from Modelo.usuario import Usuario
-from Modelo.prestamo import Prestamo
+
 
 class BibliotecaGestor:
     def __init__(self):
@@ -44,7 +41,7 @@ class BibliotecaGestor:
         id_usuario = usuario_existente[0][0]  # Obtener el id_usuario del resultado
 
         tipo_usuario = usuario_existente[0][2]  # El tipo_usuario es el tercer campo
-        max_libros = 3 if tipo_usuario == 'estudiante' else 5
+        max_libros = 3 if tipo_usuario == 1 else 5
         prestamos_activos = self.prestamo_repo.contar_prestamos_activos(id_usuario)
 
         # Verificar límite de préstamos

@@ -1,12 +1,16 @@
 import os
 import sys
+
 this_file_path = os.path.dirname(__file__)
 sys.path.append(os.path.join(this_file_path, "../"))
 
-from tkinter import *
+import customtkinter as ctk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from Controlador.gestorBiblioteca import BibliotecaGestor
+
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
 class InterfazBiblioteca:
     def __init__(self, root):
@@ -15,9 +19,15 @@ class InterfazBiblioteca:
         self.root.geometry(f"{self.root.winfo_screenwidth()}x{self.root.winfo_screenheight()}")
 
         # Cargar icono de la ventana
-        icon_path = os.path.join(this_file_path, "resources", "icon.png")
-        self.icono_ventana = PhotoImage(file=icon_path)
-        self.root.iconphoto(False, self.icono_ventana)
+        icon_path = os.path.join(this_file_path, "resources", "icon.ico")
+        icon_image = Image.open(icon_path)
+        icon_image = ImageTk.PhotoImage(icon_image)
+        self.root.iconbitmap(icon_path)
+
+        # Cargar y registrar las fuentes personalizadas
+        font_path = os.path.join(this_file_path, "resources", "fonts", "Kanit", "Kanit-ExtraBold.ttf")
+        self.custom_font = ctk.CTkFont(family=font_path, size=50, weight="bold")  # Tamaño grande para el título
+        self.button_font = ctk.CTkFont(family=font_path, size=20)  # Tamaño pequeño para los botones
 
         # Cargar imagen de fondo
         self.background_image = Image.open(os.path.join(this_file_path, "resources", "wallpaper.jpg"))
@@ -28,40 +38,39 @@ class InterfazBiblioteca:
         self.bg_photo = ImageTk.PhotoImage(self.background_image)
 
         # Crear el canvas para el fondo
-        self.canvas = Canvas(self.root, width=self.root.winfo_screenwidth(), height=self.root.winfo_screenheight())
+        self.canvas = ctk.CTkCanvas(self.root, width=self.root.winfo_screenwidth(), height=self.root.winfo_screenheight())
         self.canvas.pack(fill="both", expand=True)
         self.canvas.create_image(0, 0, image=self.bg_photo, anchor="nw")
 
         # Crear el gestor de biblioteca
         self.biblioteca_gestor = BibliotecaGestor()
 
-        # Contenedor principal y widget de menú
-        self.main_frame = Frame(self.root, bd=5, relief=FLAT)
-        self.main_frame.place(relx=0.5, rely=0.5, anchor="center", width=int(self.root.winfo_screenwidth() * 0.6), height=int(self.root.winfo_screenheight() * 0.8))
-        
-        # Frame secundario para centrar contenido en main_frame
-        self.center_frame = Frame(self.main_frame, bd=0)
-        self.center_frame.pack(expand=True)
-
-        # Inicializar los diferentes frames de pantalla
+        # Inicializar el menú principal
         self.menu_principal()
         
     def menu_principal(self):
-        # Limpiar frame secundario
-        for widget in self.center_frame.winfo_children():
-            widget.destroy()
+        # Limpiar canvas
+        self.canvas.delete("all")
+        self.canvas.create_image(0, 0, image=self.bg_photo, anchor="nw")
 
         # Título del menú principal
-        Label(self.center_frame, text="Sistema de Gestión de Biblioteca", font=("Verdana", 26, "bold"), fg="black").pack(pady=30)
+        self.canvas.create_text(self.root.winfo_screenwidth() // 2, 175, text="Sistema de Gestión de Biblioteca", font=self.custom_font, fill="white")
 
-        # Botones de menú principal
-        Button(self.center_frame, text="Registrar Autor", font=("Arial", 20, "bold"), command=self.pantalla_registrar_autor, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
-        Button(self.center_frame, text="Registrar Libro", font=("Arial", 20, "bold"), command=self.pantalla_registrar_libro, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
-        Button(self.center_frame, text="Registrar Usuario", font=("Arial", 20, "bold"), command=self.pantalla_registrar_usuario, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
-        Button(self.center_frame, text="Prestar Libro", font=("Arial", 20, "bold"), command=self.pantalla_prestar_libro, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
-        Button(self.center_frame, text="Devolver Libro", font=("Arial", 20, "bold"), command=self.pantalla_devolver_libro, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
-        Button(self.center_frame, text="Consultar Disponibilidad", font=("Arial", 20, "bold"), command=self.pantalla_consultar_disponibilidad, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
-
+        # Botones del menú principal
+        botones = [
+            ("Registrar Autor", self.pantalla_registrar_autor),
+            ("Registrar Libro", self.pantalla_registrar_libro),
+            ("Registrar Usuario", self.pantalla_registrar_usuario),
+            ("Prestar Libro", self.pantalla_prestar_libro),
+            ("Devolver Libro", self.pantalla_devolver_libro),
+            ("Consultar Disponibilidad", self.pantalla_consultar_disponibilidad)
+        ]
+        
+        y_position = 375
+        for texto, comando in botones:
+            boton = ctk.CTkButton(self.root, text=texto, font=self.button_font, command=comando, width=350, height=55, fg_color="#ffffff", text_color="black", border_width=2)
+            self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position, window=boton)
+            y_position += 70
 
     def pantalla_registrar_autor(self):
         self._crear_pantalla_formulario("Registrar Autor", ["Nombre", "Apellido", "Nacionalidad"], self.guardar_autor)
@@ -82,26 +91,33 @@ class InterfazBiblioteca:
         self._crear_pantalla_formulario("Consultar Disponibilidad", ["ISBN"], self.consultar_disponibilidad)
 
     def _crear_pantalla_formulario(self, titulo, campos, funcion_guardar):
-        # Limpiar el frame secundario
-        for widget in self.center_frame.winfo_children():
-            widget.destroy()
+        # Limpiar el canvas
+        self.canvas.delete("all")
+        self.canvas.create_image(0, 0, image=self.bg_photo, anchor="nw")
 
         # Título del formulario
-        Label(self.center_frame, text=titulo, font=("Arial", 24, "bold"), fg="black").pack(pady=20)
+        self.canvas.create_text(self.root.winfo_screenwidth() // 2, 100, text=titulo, font=self.custom_font, fill="white")
 
         # Campos de entrada dinámicos
+        y_position = 180
         entradas = {}
         for campo in campos:
-            frame_campo = Frame(self.center_frame, bd=0)
-            frame_campo.pack(pady=5)
+            etiqueta = ctk.CTkLabel(self.root, text=f"{campo}:", font=self.button_font, text_color="white")
+            entrada = ctk.CTkEntry(self.root, font=self.button_font, width=300)
 
-            Label(frame_campo, text=f"{campo}:", font=("Arial", 18)).pack(side=LEFT, padx=10)
-            entradas[campo] = Entry(frame_campo, font=("Arial", 16), width=35)
-            entradas[campo].pack(side=RIGHT, padx=10)
+            self.canvas.create_window(self.root.winfo_screenwidth() // 2 - 150, y_position, window=etiqueta, anchor="e")
+            self.canvas.create_window(self.root.winfo_screenwidth() // 2 + 150, y_position, window=entrada, anchor="w")
+
+            entradas[campo] = entrada
+            y_position += 50
 
         # Botones de guardar y volver al menú
-        Button(self.center_frame, text="Guardar", font=("Arial", 18, "bold"), command=lambda: funcion_guardar(entradas), bg="#3498db", fg="white").pack(pady=20)
-        Button(self.center_frame, text="Volver al Menú", font=("Arial", 18, "bold"), command=self.menu_principal, bg="#e74c3c", fg="white").pack(pady=10)
+        guardar_boton = ctk.CTkButton(self.root, text="Guardar", font=self.button_font, command=lambda: funcion_guardar(entradas), width=200)
+        volver_boton = ctk.CTkButton(self.root, text="Volver al Menú", font=self.button_font, command=self.menu_principal, width=200)
+
+        self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position + 30, window=guardar_boton)
+        self.canvas.create_window(self.root.winfo_screenwidth() // 2, y_position + 90, window=volver_boton)
+
 
     # Funciones para cada acción
     def guardar_autor(self, entradas):
@@ -162,6 +178,6 @@ class InterfazBiblioteca:
 
 
 if __name__ == "__main__":
-    root = Tk()
+    root = ctk.CTk()
     app = InterfazBiblioteca(root)
     root.mainloop()

@@ -1,5 +1,4 @@
 import random
-from datetime import datetime
 from databaseSingleton import DatabaseSingleton
 
 class CargaDatos:

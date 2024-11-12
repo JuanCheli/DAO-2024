@@ -24,7 +24,6 @@ class AutorRepository:
         return bool(result)
 
 
-
     def obtener_autor_por_id(self, id_autor):
         query = "SELECT * FROM autores WHERE id_autor = ?"
         result = self.db.fetch_query(query, (id_autor,))
