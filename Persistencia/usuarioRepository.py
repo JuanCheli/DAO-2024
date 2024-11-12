@@ -43,8 +43,7 @@ class UsuarioRepository:
         """
         result = self.db.fetch_query(query, (nombre, apellido))
         if result:
-            # Retornar el primer usuario encontrado (en este caso se supone que no hay duplicados)
-            return result[0]
+            return result
         return None
 
     def listar_usuarios(self):

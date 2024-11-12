@@ -11,7 +11,7 @@ from Controlador.gestorBiblioteca import BibliotecaGestor
 class InterfazBiblioteca:
     def __init__(self, root):
         self.root = root
-        self.root.title("Gestión de Biblioteca")
+        self.root.title("Gestor de Bibliotecas - DAO 2024")
         self.root.geometry(f"{self.root.winfo_screenwidth()}x{self.root.winfo_screenheight()}")
 
         # Cargar icono de la ventana
@@ -36,26 +36,32 @@ class InterfazBiblioteca:
         self.biblioteca_gestor = BibliotecaGestor()
 
         # Contenedor principal y widget de menú
-        self.main_frame = Frame(self.root, bg="white", bd=5, relief=SOLID)
-        self.main_frame.place(relx=0.5, rely=0.3, anchor="center", width=400, height=550)
+        self.main_frame = Frame(self.root, bd=5, relief=FLAT)
+        self.main_frame.place(relx=0.5, rely=0.5, anchor="center", width=int(self.root.winfo_screenwidth() * 0.6), height=int(self.root.winfo_screenheight() * 0.8))
         
+        # Frame secundario para centrar contenido en main_frame
+        self.center_frame = Frame(self.main_frame, bd=0)
+        self.center_frame.pack(expand=True)
+
         # Inicializar los diferentes frames de pantalla
         self.menu_principal()
         
     def menu_principal(self):
-        # Limpiar frame principal
-        for widget in self.main_frame.winfo_children():
+        # Limpiar frame secundario
+        for widget in self.center_frame.winfo_children():
             widget.destroy()
 
-        # Botones de menú principal
-        Label(self.main_frame, text="Sistema de Gestión de Biblioteca", font=("Verdana", 16, "bold"), bg="white").grid(row=0, column=0, pady=10)
+        # Título del menú principal
+        Label(self.center_frame, text="Sistema de Gestión de Biblioteca", font=("Verdana", 26, "bold"), fg="black").pack(pady=30)
 
-        Button(self.main_frame, text="Registrar Autor", font=("Arial", 14, "bold"), command=self.pantalla_registrar_autor, width=20, bg="#3498db", fg="white").grid(row=1, column=0, pady=10)
-        Button(self.main_frame, text="Registrar Libro", font=("Arial", 14, "bold"), command=self.pantalla_registrar_libro, width=20, bg="#3498db", fg="white").grid(row=2, column=0, pady=10)
-        Button(self.main_frame, text="Registrar Usuario", font=("Arial", 14, "bold"), command=self.pantalla_registrar_usuario, width=20, bg="#3498db", fg="white").grid(row=3, column=0, pady=10)
-        Button(self.main_frame, text="Prestar Libro", font=("Arial", 14, "bold"), command=self.pantalla_prestar_libro, width=20, bg="#3498db", fg="white").grid(row=4, column=0, pady=10)
-        Button(self.main_frame, text="Devolver Libro", font=("Arial", 14, "bold"), command=self.pantalla_devolver_libro, width=20, bg="#3498db", fg="white").grid(row=5, column=0, pady=10)
-        Button(self.main_frame, text="Consultar Disponibilidad", font=("Arial", 14, "bold"), command=self.pantalla_consultar_disponibilidad, width=20, bg="#3498db", fg="white").grid(row=6, column=0, pady=10)
+        # Botones de menú principal
+        Button(self.center_frame, text="Registrar Autor", font=("Arial", 20, "bold"), command=self.pantalla_registrar_autor, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
+        Button(self.center_frame, text="Registrar Libro", font=("Arial", 20, "bold"), command=self.pantalla_registrar_libro, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
+        Button(self.center_frame, text="Registrar Usuario", font=("Arial", 20, "bold"), command=self.pantalla_registrar_usuario, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
+        Button(self.center_frame, text="Prestar Libro", font=("Arial", 20, "bold"), command=self.pantalla_prestar_libro, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
+        Button(self.center_frame, text="Devolver Libro", font=("Arial", 20, "bold"), command=self.pantalla_devolver_libro, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
+        Button(self.center_frame, text="Consultar Disponibilidad", font=("Arial", 20, "bold"), command=self.pantalla_consultar_disponibilidad, width=30, height=2, bg="#3498db", fg="white").pack(pady=15)
+
 
     def pantalla_registrar_autor(self):
         self._crear_pantalla_formulario("Registrar Autor", ["Nombre", "Apellido", "Nacionalidad"], self.guardar_autor)
@@ -76,23 +82,26 @@ class InterfazBiblioteca:
         self._crear_pantalla_formulario("Consultar Disponibilidad", ["ISBN"], self.consultar_disponibilidad)
 
     def _crear_pantalla_formulario(self, titulo, campos, funcion_guardar):
-        # Limpiar el frame principal
-        for widget in self.main_frame.winfo_children():
+        # Limpiar el frame secundario
+        for widget in self.center_frame.winfo_children():
             widget.destroy()
 
-        # Título
-        Label(self.main_frame, text=titulo, font=("Arial", 16, "bold"), bg="white").grid(row=0, column=0, pady=10, columnspan=2)
+        # Título del formulario
+        Label(self.center_frame, text=titulo, font=("Arial", 24, "bold"), fg="black").pack(pady=20)
 
         # Campos de entrada dinámicos
         entradas = {}
-        for i, campo in enumerate(campos, start=1):
-            Label(self.main_frame, text=f"{campo}:", bg="white").grid(row=i, column=0, sticky=W, padx=10)
-            entradas[campo] = Entry(self.main_frame)
-            entradas[campo].grid(row=i, column=1, pady=5, padx=10)
+        for campo in campos:
+            frame_campo = Frame(self.center_frame, bd=0)
+            frame_campo.pack(pady=5)
 
-        # Botón de guardar
-        Button(self.main_frame, text="Guardar", command=lambda: funcion_guardar(entradas), bg="#3498db", fg="white").grid(row=len(campos) + 1, column=0, columnspan=2, pady=15)
-        Button(self.main_frame, text="Volver al Menú", command=self.menu_principal, bg="#e74c3c", fg="white").grid(row=len(campos) + 2, column=0, columnspan=2, pady=5)
+            Label(frame_campo, text=f"{campo}:", font=("Arial", 18)).pack(side=LEFT, padx=10)
+            entradas[campo] = Entry(frame_campo, font=("Arial", 16), width=35)
+            entradas[campo].pack(side=RIGHT, padx=10)
+
+        # Botones de guardar y volver al menú
+        Button(self.center_frame, text="Guardar", font=("Arial", 18, "bold"), command=lambda: funcion_guardar(entradas), bg="#3498db", fg="white").pack(pady=20)
+        Button(self.center_frame, text="Volver al Menú", font=("Arial", 18, "bold"), command=self.menu_principal, bg="#e74c3c", fg="white").pack(pady=10)
 
     # Funciones para cada acción
     def guardar_autor(self, entradas):
