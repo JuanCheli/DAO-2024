@@ -73,13 +73,13 @@ class BibliotecaGestor:
         if not prestamo_existente:
             raise ValueError("Préstamo no encontrado.")
 
-        # Registrar la devolución
-        self.prestamo_repo.actualizar_fecha_devolucion(prestamo.get_id(), datetime.now().date())
+        # Marcar el préstamo como devuelto
+        self.prestamo_repo.marcar_como_devuelto(prestamo.get_id())
 
         # Actualizar cantidad disponible del libro
         isbn = prestamo.get_isbn()
         libro = self.libro_repo.obtener_libro_por_isbn(isbn)
-        nueva_cantidad = libro.get_cantidad() + 1
+        nueva_cantidad = libro[0][5] + 1
         self.libro_repo.actualizar_cantidad(isbn, nueva_cantidad)
 
     # 6. Consulta de Disponibilidad
