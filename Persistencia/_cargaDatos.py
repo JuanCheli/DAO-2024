@@ -93,22 +93,22 @@ class CargaDatos:
         usuarios = [usuario[0] for usuario in usuarios]
         libros = [libro[0] for libro in libros]
 
-        for i in range(500):
+        for i in range(50):
             id_usuario = random.choice(usuarios)
             isbn = random.choice(libros)
             fecha_prestamo = datetime.now() - timedelta(days=60)  # El dia de hoy - 60 dias
 
-            if i < 100:
+            if i < 10:
                 # Préstamo vencido: fecha_devolucion en el pasado y no devuelto
-                fecha_devolucion = fecha_prestamo + timedelta(days=random.randint(1, 30))
+                fecha_devolucion = fecha_prestamo + timedelta(days=random.randint(5, 30))
                 devuelto = 0  # No devuelto
-            elif i < 250:
+            elif i < 20:
                 # Préstamo finalizado: fecha_devolucion en el pasado y ya devuelto
-                fecha_devolucion = fecha_prestamo + timedelta(days=random.randint(1, 30))
+                fecha_devolucion = fecha_prestamo + timedelta(days=random.randint(5, 30))
                 devuelto = 1  # Devuelto
             else:
                 # Préstamo en curso: fecha_devolucion en el futuro
-                fecha_devolucion = datetime.now() + timedelta(days=random.randint(1, 30))
+                fecha_devolucion = datetime.now() + timedelta(days=random.randint(5, 30))
                 devuelto = random.choice([0, 1])  # Algunos devueltos, otros no
 
             query = """

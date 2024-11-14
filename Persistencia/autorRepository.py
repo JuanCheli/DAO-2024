@@ -38,3 +38,4 @@ class AutorRepository:
         query = "DELETE FROM autores WHERE id_autor = ?"
         parameter = (id_autor,)
         self.db.execute_query(query, parameter)
+
