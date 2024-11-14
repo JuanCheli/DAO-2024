@@ -6,6 +6,7 @@ from Persistencia.libroRepository import LibroRepository
 from Persistencia.autorRepository import AutorRepository
 from Persistencia.usuarioRepository import UsuarioRepository
 from Persistencia.prestamoRepository import PrestamoRepository
+from Persistencia.multaRepository import MultaRepository
 
 from Reportes.reportes import crear_reporte
 
@@ -18,6 +19,7 @@ class BibliotecaGestor:
         self.autor_repo = AutorRepository()
         self.usuario_repo = UsuarioRepository()
         self.prestamo_repo = PrestamoRepository()
+        self.multa_repo = MultaRepository()
 
     # 1. Registro de Autores
     def registrar_autor(self, nombre, apellido, nacionalidad):
@@ -71,12 +73,22 @@ class BibliotecaGestor:
         # Verificar si el préstamo existe
         prestamo_existente = self.prestamo_repo.obtener_prestamo_por_id(prestamo)
         if not prestamo_existente:
-            return False
-            
+            return "Préstamo no encontrado."
 
-        # Verificar si el libro está dentro del plazo de devolución
-        if datetime.strptime(prestamo_existente[0][4], "%Y-%m-%d").date() < datetime.now().date():  # Verificar si la fecha de devolución es pasada
-            print(f"El préstamo está fuera del plazo.")
+        # Verificar si el libro está fuera del plazo de devolución
+        fecha_devolucion = datetime.strptime(prestamo_existente[0][4], "%Y-%m-%d").date()
+        hoy = datetime.now().date()
+        
+        dias_retraso = (hoy - fecha_devolucion).days
+        if dias_retraso > 0:
+            # Calcular monto de la multa
+            monto_multa = dias_retraso * 500 # Básicamente, pusimos como valor arbitrario 500 pesos por dia de retraso
+            
+            # Registrar multa en la base de datos
+            id_usuario = prestamo_existente[0][1]
+            isbn = prestamo_existente[0][2]
+            self.registrar_multa(id_usuario, isbn, dias_retraso, monto_multa)
+            print(f"El usuario tiene una multa de {monto_multa} por {dias_retraso} días de retraso.")
         
         # Marcar el préstamo como devuelto
         self.prestamo_repo.marcar_como_devuelto(prestamo)
@@ -88,6 +100,9 @@ class BibliotecaGestor:
         self.libro_repo.actualizar_cantidad(isbn, nueva_cantidad)
         return True
 
+    def registrar_multa(self, id_usuario, isbn, dias_retraso, monto):
+        """Utiliza MultaRepository para registrar una multa en la base de datos."""
+        self.multa_repo.registrar_multa(id_usuario, isbn, dias_retraso, monto)
 
     # 6. Consulta de Disponibilidad
     def consultar_disponibilidad(self, isbn):

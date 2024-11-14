@@ -70,4 +70,16 @@ class LibroRepository:
         else:
             print("El libro no se encontró en la base de datos.")
             return False
+        
+
+    def obtener_libros_por_autor(self):
+        """Obtiene un listado de libros agrupados por autor, incluyendo la cantidad disponible."""
+        query = """
+            SELECT a.nombre || ' ' || a.apellido AS autor, l.titulo, l.cantidad 
+            FROM libros l 
+            JOIN autores a ON l.id_autor = a.id_autor
+            ORDER BY autor
+        """
+        result = self.db.fetch_query(query)
+        return result
 

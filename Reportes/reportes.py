@@ -5,7 +5,10 @@ from reportlab.lib import colors
 from Reportes.generadorEstadisticas import (
     prestamos_vencidos, grafico_libros_mas_prestados, grafico_usuarios_mas_prestamos
 )
+from Persistencia.libroRepository import LibroRepository
 import os
+
+
 def crear_reporte():
     # Asegurarse de que el directorio de reportes existe
     if not os.path.exists("DAO-2024/Reportes/reportes"):
@@ -54,6 +57,57 @@ def crear_reporte():
     img_usuarios_mas_prestamos = Image("DAO-2024/Reportes/reportes/img/usuarios_mas_prestamos.png", width=400, height=200)
     Story.append(img_usuarios_mas_prestamos)
     Story.append(Spacer(1, 12))
+
+
+    # 4. Reporte de Libros por Autor
+    Story.append(PageBreak())
+    Story.append(Paragraph("Libros por Autor", styles["Heading2"]))
+    
+    # Obtener datos de libros por autor usando LibroRepository
+    libro_repo = LibroRepository()
+    libros_por_autor = libro_repo.obtener_libros_por_autor()
+    
+    # Crear estructura de datos para la tabla de libros por autor
+    data_libros = [["Autor", "Título del Libro", "Cantidad Disponible"]]
+    autor_totales = {}
+    
+    for libro in libros_por_autor:
+        autor, titulo, cantidad = libro
+        data_libros.append([autor, titulo, cantidad])
+        
+        # Sumarizar cantidad por autor
+        if autor in autor_totales:
+            autor_totales[autor] += cantidad
+        else:
+            autor_totales[autor] = cantidad
+    
+    # Crear la tabla de libros por autor con estilo
+    table_libros = Table(data_libros, colWidths=[120, 200, 80])
+    table_libros.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.gray),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+        ("BACKGROUND", (0, 1), (-1, -1), colors.beige)
+    ]))
+    Story.append(table_libros)
+    Story.append(Spacer(1, 12))
+
+    # Agregar resumen de total de libros por autor
+    Story.append(Paragraph("Resumen de Cantidad de Libros por Autor", styles["Heading2"]))
+    resumen_data = [["Autor", "Total de Libros Disponibles"]]
+    resumen_data.extend([[autor, total] for autor, total in autor_totales.items()])
+    
+    resumen_table = Table(resumen_data, colWidths=[200, 120])
+    resumen_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.gray),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+        ("BACKGROUND", (0, 1), (-1, -1), colors.lightgrey)
+    ]))
+    Story.append(resumen_table)
+
 
     # Generar el PDF
     doc.build(Story)

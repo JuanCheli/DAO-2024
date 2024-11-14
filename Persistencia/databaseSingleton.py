@@ -68,6 +68,17 @@ class DatabaseSingleton:
                     FOREIGN KEY(isbn) REFERENCES libros(isbn)
                 )
             """)
+            self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS multas (
+                id_multa INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_usuario INT NOT NULL,
+                isbn TEXT NOT NULL,
+                dias_retraso INT NOT NULL,
+                monto REAL NOT NULL,
+                FOREIGN KEY(id_usuario) REFERENCES usuarios(id_usuario),
+                FOREIGN KEY(isbn) REFERENCES libros(isbn)
+            )
+        """)
             # Confirmar los cambios
             self.connection.commit()
             print("Tablas creadas o verificadas correctamente")
