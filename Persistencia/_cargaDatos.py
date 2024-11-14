@@ -13,7 +13,7 @@ class CargaDatos:
                      "Sanchez", "Garcia", "Fernandez", "Ruiz", "Alvarez", "Ramirez", "Jimenez", "Vazquez", "Moreno", 
                      "Torres", "Cruz", "Reyes"]
 
-        tipos_usuario = [0, 1]  # 1 = estudiante, 2 = profesor
+        tipos_usuario = [0, 1]  # 0 = estudiante, 1 = profesor
         direcciones = ["Av. Libertad 1234","Calle de los Olivos 567","Paseo del Prado 890","Calle Mayor 135",
                        "Av. de la Constitución 2468","Callejón de las Flores 321","Calle San Juan 876","Av. de la Paz 1920",
                        "Calle La Esperanza 1357","Calle del Sol 468","Av. del Parque 234","Calle Primavera 905","Paseo de la Reforma 6789",
@@ -96,7 +96,7 @@ class CargaDatos:
         for i in range(500):
             id_usuario = random.choice(usuarios)
             isbn = random.choice(libros)
-            fecha_prestamo = datetime.now() - timedelta(days=random.randint(1, 365))  # Fecha aleatoria en el último año
+            fecha_prestamo = datetime.now() - timedelta(days=60)  # El dia de hoy - 60 dias
 
             if i < 100:
                 # Préstamo vencido: fecha_devolucion en el pasado y no devuelto
