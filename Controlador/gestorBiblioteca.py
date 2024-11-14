@@ -73,7 +73,7 @@ class BibliotecaGestor:
         # Verificar si el préstamo existe
         prestamo_existente = self.prestamo_repo.obtener_prestamo_por_id(prestamo)
         if not prestamo_existente:
-            return "Préstamo no encontrado."
+            return False
 
         # Verificar si el libro está fuera del plazo de devolución
         fecha_devolucion = datetime.strptime(prestamo_existente[0][4], "%Y-%m-%d").date()
