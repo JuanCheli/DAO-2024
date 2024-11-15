@@ -75,6 +75,12 @@ class BibliotecaGestor:
         if not prestamo_existente:
             return "ID del préstamo no encontrado."
 
+        # Verificar si ya está devuelto, y si no, lo marca como devuelto
+        # Basicamente, hacemos esto primero porque si no va a crear una multa para un mismo
+        # prestamo vencido, aunque ya está devuelto y la multa ya había sido creada
+        resultado = self.prestamo_repo.marcar_como_devuelto(prestamo)
+        if resultado != True:  # Esto significa que devolvió un mensaje en lugar de True
+            return resultado
 
         # Verificar si el libro está fuera del plazo de devolución
         fecha_devolucion = datetime.strptime(prestamo_existente[0][4], "%Y-%m-%d").date()
@@ -91,10 +97,7 @@ class BibliotecaGestor:
             self.registrar_multa(id_usuario, isbn, dias_retraso, monto_multa)
             print(f"El usuario tiene una multa de {monto_multa} por {dias_retraso} días de retraso.")
         
-        # Verificar si ya está devuelto, y si no, lo marca como devuelto
-        resultado = self.prestamo_repo.marcar_como_devuelto(prestamo)
-        if resultado != True:  # Esto significa que devolvió un mensaje en lugar de True
-            return resultado
+
 
         # Actualizar cantidad disponible del libro
         isbn = prestamo_existente[0][2]
