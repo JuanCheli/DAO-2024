@@ -179,9 +179,15 @@ class InterfazBiblioteca:
         else:
             self._mostrar_resultado(False, None, resultado)
 
+    
     def devolver_libro(self, entradas):
         resultado = self.biblioteca_gestor.devolver_libro(entradas["ID Préstamo"].get())
-        self._mostrar_resultado(resultado, "Libro devuelto correctamente.", "ID del préstamo no encontrado.")
+        
+        if resultado == True:
+            self._mostrar_resultado(resultado, "Libro devuelto correctamente.", "")
+        else:
+            self._mostrar_resultado(False, "", resultado)  # Muestra el mensaje de error específico, en base a lo que pasó
+
 
     def consultar_disponibilidad(self, entradas):
         cantidad = self.biblioteca_gestor.consultar_disponibilidad(entradas["ISBN"].get())

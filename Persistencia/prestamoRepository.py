@@ -8,8 +8,7 @@ class PrestamoRepository:
     def agregar_prestamo(self, id_usuario, isbn, fecha_prestamo, fecha_devolucion):
         # Verificar si ya existe un préstamo activo para el mismo usuario y libro
         if self.existe_prestamo(id_usuario, isbn):
-            print(f"El préstamo para el usuario {id_usuario} con ISBN {isbn} ya existe.")
-            return False
+            return f"El préstamo para el usuario {id_usuario} con ISBN {isbn} ya existe."
 
         query = """
         INSERT INTO prestamos (id_usuario, isbn, fecha_prestamo, fecha_devolucion, devuelto)
@@ -55,8 +54,19 @@ class PrestamoRepository:
         parameter = (id_prestamo,)
         self.db.execute_query(query, parameter)
 
+
     def marcar_como_devuelto(self, id_prestamo):
-        """Marca un préstamo como devuelto cambiando el valor del campo `devuelto` a 1."""
-        query = "UPDATE prestamos SET devuelto = 1 WHERE id_prestamo = ?"
-        parameter = (id_prestamo,)
-        self.db.execute_query(query, parameter)
+        """Marca un préstamo como devuelto, pero verifica primero si ya está devuelto."""
+        # Verificar si ya está devuelto
+        query_verificar = "SELECT devuelto FROM prestamos WHERE id_prestamo = ?"
+        result = self.db.fetch_query(query_verificar, (id_prestamo,))
+        
+        if not result:
+            return "Préstamo no encontrado."
+        elif result[0][0] == 1:
+            return "El préstamo ya ha sido devuelto."
+
+        # Marcar como devuelto
+        query_actualizar = "UPDATE prestamos SET devuelto = 1 WHERE id_prestamo = ?"
+        self.db.execute_query(query_actualizar, (id_prestamo,))
+        return True

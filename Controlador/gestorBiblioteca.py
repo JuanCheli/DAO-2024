@@ -61,19 +61,20 @@ class BibliotecaGestor:
         # Realizar préstamo
         fecha_prestamo = datetime.now().date()
         fecha_devolucion = fecha_prestamo + timedelta(days=30)
-        self.prestamo_repo.agregar_prestamo(id_usuario, isbn, fecha_prestamo, fecha_devolucion)
+        res = self.prestamo_repo.agregar_prestamo(id_usuario, isbn, fecha_prestamo, fecha_devolucion)
 
         # Actualizar cantidad disponible del libro
         nueva_cantidad = libro[0][5] - 1
         self.libro_repo.actualizar_cantidad(isbn, nueva_cantidad)
-        return True
+        return res
 
     # 5. Devolución de Libros
     def devolver_libro(self, prestamo):
         # Verificar si el préstamo existe
         prestamo_existente = self.prestamo_repo.obtener_prestamo_por_id(prestamo)
         if not prestamo_existente:
-            return False
+            return "ID del préstamo no encontrado."
+
 
         # Verificar si el libro está fuera del plazo de devolución
         fecha_devolucion = datetime.strptime(prestamo_existente[0][4], "%Y-%m-%d").date()
@@ -90,8 +91,10 @@ class BibliotecaGestor:
             self.registrar_multa(id_usuario, isbn, dias_retraso, monto_multa)
             print(f"El usuario tiene una multa de {monto_multa} por {dias_retraso} días de retraso.")
         
-        # Marcar el préstamo como devuelto
-        self.prestamo_repo.marcar_como_devuelto(prestamo)
+        # Verificar si ya está devuelto, y si no, lo marca como devuelto
+        resultado = self.prestamo_repo.marcar_como_devuelto(prestamo)
+        if resultado != True:  # Esto significa que devolvió un mensaje en lugar de True
+            return resultado
 
         # Actualizar cantidad disponible del libro
         isbn = prestamo_existente[0][2]
