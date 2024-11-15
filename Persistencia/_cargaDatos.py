@@ -124,6 +124,7 @@ class CargaDatos:
                 devuelto = 1  # Devuelto
             else:
                 # Préstamo en curso
+                fecha_prestamo = datetime.now() - timedelta(days=random.randint(10, 15))
                 fecha_devolucion = datetime.now() + timedelta(days=random.randint(5, 30))
                 devuelto = random.choice([0, 1])  # Algunos devueltos, otros no
 
