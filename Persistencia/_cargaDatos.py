@@ -96,7 +96,7 @@ class CargaDatos:
         for i in range(50):
             id_usuario = random.choice(usuarios)
             isbn = random.choice(libros)
-            fecha_prestamo = datetime.now() - timedelta(days=60)  # El dia de hoy - 60 dias
+            fecha_prestamo = datetime.now() - timedelta(days=random.randint(30, 60))  # El dia de hoy - (30-60) dias
 
             if i < 10:
                 # Préstamo vencido: fecha_devolucion en el pasado y no devuelto

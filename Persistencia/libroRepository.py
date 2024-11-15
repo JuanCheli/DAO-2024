@@ -12,8 +12,16 @@ class LibroRepository:
             print(f"El libro con ISBN {isbn} ya existe en la base de datos.")
             return False
 
-        # Verificar si el autor ya existe
-        nombre, apellido = nombre_autor.split(" ")
+        # Separar el nombre y el apellido del autor
+        nombre_partes = nombre_autor.split()
+
+        if len(nombre_partes) > 1:
+            nombre = nombre_partes[0]  # Primer elemento como nombre
+            apellido = " ".join(nombre_partes[1:])  # El resto como apellido
+        else:
+            print("Error: Se requiere al menos un nombre y un apellido para el autor.")
+            return False
+        
         id_autor = self.autor_repo.existe_autor(nombre, apellido)
 
         if not id_autor:
