@@ -1,5 +1,4 @@
-tkinter
-customtkinter
-pillow
-matplotlib
-reportlab
+customtkinter>=5.0.0
+pillow>=9.3.0
+matplotlib>=3.5.2
+reportlab>=3.6.12
