@@ -83,40 +83,59 @@ class CargaDatos:
 
     def cargar_prestamos(self):
         # Obtener todos los usuarios y libros para seleccionar aleatoriamente
-        usuarios = self.db.fetch_query("SELECT id_usuario FROM usuarios")
+        usuarios = self.db.fetch_query("SELECT id_usuario, tipo_usuario FROM usuarios")
         libros = self.db.fetch_query("SELECT isbn FROM libros")
 
         if not usuarios or not libros:
             print("No se encontraron usuarios o libros para generar préstamos.")
             return
 
-        usuarios = [usuario[0] for usuario in usuarios]
         libros = [libro[0] for libro in libros]
 
-        for i in range(50):
-            id_usuario = random.choice(usuarios)
-            isbn = random.choice(libros)
-            fecha_prestamo = datetime.now() - timedelta(days=random.randint(30, 60))  # El dia de hoy - (30-60) dias
+        for i in range(100):
+            # Seleccionar un usuario al azar y verificar el límite de préstamos activos
+            id_usuario, tipo_usuario = random.choice(usuarios)
+            
+            # Definir el límite según el tipo de usuario
+            limite_prestamos = 3 if tipo_usuario == 0 else 5  # 0 = estudiante, 1 = profesor
+            
+            # Contar los préstamos activos (devuelto=0) para este usuario
+            prestamos_activos = self.db.fetch_query(
+                "SELECT COUNT(*) FROM prestamos WHERE id_usuario = ? AND devuelto = 0", (id_usuario,)
+            )[0][0]
+            
+            # Verificar si el usuario ya alcanzó su límite de préstamos
+            if prestamos_activos >= limite_prestamos:
+                print(f"El usuario {id_usuario} ha alcanzado el límite de préstamos activos.")
+                continue  # Saltar al siguiente préstamo si se excede el límite
 
-            if i < 10:
-                # Préstamo vencido: fecha_devolucion en el pasado y no devuelto
+            # Seleccionar un libro y establecer fechas de préstamo y devolución
+            isbn = random.choice(libros)
+            fecha_prestamo = datetime.now() - timedelta(days=random.randint(30, 60))  # Hace entre 30 y 60 días
+
+            # Determinar el estado del préstamo
+            if i < 20:
+                # Préstamo vencido
                 fecha_devolucion = fecha_prestamo + timedelta(days=random.randint(5, 30))
                 devuelto = 0  # No devuelto
-            elif i < 20:
-                # Préstamo finalizado: fecha_devolucion en el pasado y ya devuelto
+            elif i < 40:
+                # Préstamo finalizado
                 fecha_devolucion = fecha_prestamo + timedelta(days=random.randint(5, 30))
                 devuelto = 1  # Devuelto
             else:
-                # Préstamo en curso: fecha_devolucion en el futuro
+                # Préstamo en curso
                 fecha_devolucion = datetime.now() + timedelta(days=random.randint(5, 30))
                 devuelto = random.choice([0, 1])  # Algunos devueltos, otros no
 
+            # Insertar el préstamo en la base de datos
             query = """
                 INSERT INTO prestamos (id_usuario, isbn, fecha_prestamo, fecha_devolucion, devuelto)
                 VALUES (?, ?, ?, ?, ?)
             """
             parameters = (id_usuario, isbn, fecha_prestamo.strftime('%Y-%m-%d'), fecha_devolucion.strftime('%Y-%m-%d'), devuelto)
             self.db.execute_query(query, parameters)
+
+
 
     def cargar_datos(self):
         self.cargar_usuarios()
